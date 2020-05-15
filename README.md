@@ -10,6 +10,11 @@ RISC-V target string manipulation utilities
 
 On [docs.rs](https://docs.rs/riscv-target)
 
+## Minimum Supported Rust Version (MSRV)
+
+This crate is guaranteed to compile on stable Rust 1.36.0 and up. It *might*
+compile with older versions but that may change in any new patch release.
+
 ## License
 
 Licensed under either of

@@ -1,7 +1,9 @@
 language: rust
 os: linux
-rust: stable
-dist: xenial
+rust:
+  - 1.36.0 # MSRV
+  - stable
+  - nightly
 
 sudo: true
 
