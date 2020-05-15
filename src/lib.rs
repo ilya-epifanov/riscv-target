@@ -61,14 +61,14 @@ impl Target {
         }
     }
 
+    fn is_g_extension(e: char) -> bool {
+        e == 'm' || e == 'a' || e == 'f' || e == 'd'
+    }
+
     pub fn retain_extensions(&mut self, extensions: &str) {
-        let retain_mafd = extensions.contains('g');
+        let has_g = extensions.contains('g');
         self.extensions.retain(|&e| {
-            if retain_mafd && (e == 'm' || e == 'a' || e == 'f' || e == 'd') {
-                true
-            } else {
-                extensions.contains(e)
-            }
+            (has_g && Self::is_g_extension(e)) || extensions.contains(e)
         })
     }
 
@@ -130,10 +130,8 @@ impl ToString for Target {
         };
 
         for e in EXTENSION_ORDER.chars() {
-            if !(has_g && (e == 'm' || e == 'a' || e == 'f' || e == 'd')) {
-                if self.extensions.contains(&e) {
-                    recognized_extensions.push(e);
-                }
+            if !(has_g && Self::is_g_extension(e)) && self.extensions.contains(&e) {
+                recognized_extensions.push(e);
             }
         }
 
