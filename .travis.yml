@@ -5,6 +5,10 @@ rust:
   - stable
   - nightly
 
+matrix:
+  allow_failures:
+    - rust: nightly 
+
 sudo: true
 
 before_install:
