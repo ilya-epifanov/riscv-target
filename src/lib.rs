@@ -1,3 +1,6 @@
+extern crate lazy_static;
+extern crate regex;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashSet;
@@ -115,7 +118,7 @@ impl ToString for Target {
         let mut unrecognized_extensions: Vec<char> = self
             .extensions
             .difference(&REGISTERED_EXTENSIONS)
-            .copied()
+            .cloned()
             .collect();
         unrecognized_extensions.sort();
         let unrecognized_extensions: String = unrecognized_extensions.iter().collect();
