@@ -120,15 +120,27 @@ impl ToString for Target {
         unrecognized_extensions.sort();
         let unrecognized_extensions: String = unrecognized_extensions.iter().collect();
 
-        let recognized_extensions: String = EXTENSION_ORDER
-            .chars()
-            .filter(|e| self.extensions.contains(e))
-            .collect();
+        let mut recognized_extensions = String::new();
+
+        let has_g = self.has_extension('g');
+        let base_extension = if has_g {
+            'g'
+        } else {
+            self.base_extension
+        };
+
+        for e in EXTENSION_ORDER.chars() {
+            if !(has_g && (e == 'm' || e == 'a' || e == 'f' || e == 'd')) {
+                if self.extensions.contains(&e) {
+                    recognized_extensions.push(e);
+                }
+            }
+        }
 
         format!(
             "riscv{}{}{}{}{}-{}",
             self.bits,
-            self.base_extension,
+            base_extension,
             recognized_extensions,
             unrecognized_extensions,
             self.suffix,
@@ -174,7 +186,7 @@ mod tests {
         assert_eq!(target.suffix, "");
         assert_eq!(target.vendor_os, "unknown-none-elf");
 
-        assert_eq!(target.to_string(), "riscv32imafdc-unknown-none-elf");
+        assert_eq!(target.to_string(), "riscv32gc-unknown-none-elf");
     }
 
     #[test]
@@ -330,7 +342,7 @@ mod tests {
         let mut target = Target::from_target_str("riscv32emac-unknown-none-elf");
         target.add_extensions("g");
 
-        assert_eq!(target.to_string(), "riscv32imafdc-unknown-none-elf");
+        assert_eq!(target.to_string(), "riscv32gc-unknown-none-elf");
     }
 
     #[test]
