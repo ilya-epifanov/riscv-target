@@ -1,8 +1,6 @@
 extern crate lazy_static;
-extern crate regex;
 
 use lazy_static::lazy_static;
-use regex::Regex;
 use std::collections::HashSet;
 use std::str::FromStr;
 
@@ -17,8 +15,6 @@ pub struct Target {
 const EXTENSION_ORDER: &str = "eimafdqlcbjtpvn";
 
 lazy_static! {
-    static ref TARGET_REGEX: Regex =
-        regex::Regex::new("riscv(\\d+)([a-z]+)(:?[^-]*)-(.*)").unwrap();
     static ref REGISTERED_EXTENSIONS: HashSet<char> = {
         let mut exts = HashSet::new();
         for e in EXTENSION_ORDER.chars() {
@@ -30,14 +26,22 @@ lazy_static! {
 
 impl Target {
     pub fn from_target_str(target_str: &str) -> Self {
-        let target_captures = TARGET_REGEX
-            .captures(target_str)
-            .expect("RISC-V target doesn't match the pattern 'riscv(\\d+)([a-z]+)-(.*)'");
+        let parts: Vec<&str> = target_str.splitn(2, '-').collect();
+        if parts.len() < 2 {
+            panic!("Target specifier must have at least two parts separated by '-'");
+        }
 
-        let bits = u32::from_str(&target_captures[1]).unwrap();
-        let mut target_flags: HashSet<char> = target_captures[2].to_lowercase().chars().collect();
-        let suffix = target_captures[3].to_owned();
-        let vendor_os = target_captures[4].to_owned();
+        if !parts[0].starts_with("riscv") {
+            panic!("RISC-V target doesn't start with riscv");
+        }
+        let arch = &parts[0][5..];
+        let ext_idx = arch.find(|ch| !char::is_digit(ch, 10)).unwrap_or(arch.len());
+        let suffix_idx = arch[ext_idx..].find(|ch| ch < 'a' || ch > 'z').unwrap_or(arch.len() - ext_idx) + ext_idx;
+
+        let bits = u32::from_str(&arch[0..ext_idx]).expect("riscv must be followed by number of bits");
+        let mut target_flags: HashSet<char> = arch[ext_idx..suffix_idx].to_lowercase().chars().collect();
+        let suffix = arch[suffix_idx..].to_owned();
+        let vendor_os = parts[1].to_owned();
 
         let mut base_extension = 'e';
 

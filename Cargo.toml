@@ -9,5 +9,4 @@ keywords = ["riscv"]
 license = "ISC"
 
 [dependencies]
-regex = "1"
 lazy_static = "1"
