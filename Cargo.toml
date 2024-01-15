@@ -7,6 +7,7 @@ categories = ["embedded"]
 description = "RISC-V target string manipulation utilities"
 keywords = ["riscv"]
 license = "ISC"
+rust-version = "1.30"
 
 [dependencies]
 regex = "1"
